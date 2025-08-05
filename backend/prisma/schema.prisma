@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile   Profile?
+}
+
+model Profile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  fullName  String
+  headline  String?
+  contactInfo Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experiences Experience[]
+  educations Education[]
+  skills     Skill[]
+}
+
+model Experience {
+  id          String   @id @default(cuid())
+  profileId   String
+  company     String
+  position    String
+  startDate   DateTime
+  endDate     DateTime?
+  description String?
+  location    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model Education {
+  id          String   @id @default(cuid())
+  profileId   String
+  institution String
+  degree      String
+  field       String?
+  startDate   DateTime
+  endDate     DateTime?
+  gpa         Float?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model Skill {
+  id        String   @id @default(cuid())
+  profileId String
+  name      String
+  level     String?  // e.g., "Beginner", "Intermediate", "Advanced", "Expert"
+  category  String?  // e.g., "Technical", "Soft Skill", "Language"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model Job {
+  id           String   @id @default(cuid())
+  title        String
+  company      String
+  description  String
+  location     String?
+  url          String?
+  requirements Json?    // Store job requirements as JSON
+  vector       Json?    // For vector embeddings (using JSON array instead of pgvector for Supabase compatibility)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

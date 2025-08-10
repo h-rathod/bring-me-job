@@ -1,5 +1,13 @@
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { LogOut, Moon, Sun, UserRound } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useTheme } from '../theme/ThemeProvider';
 import { useNavigate } from 'react-router-dom';
 import { clearToken, getToken } from '../../lib/storage';
@@ -22,40 +30,29 @@ export function Header() {
           Bring Me Job
         </div>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={toggle}
-            className="inline-flex items-center gap-2 rounded-lg border border-border bg-foreground/5 px-3 py-2 text-sm font-medium text-foreground/90 shadow-sm transition-colors hover:bg-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-            aria-label="Toggle theme"
-          >
+          <Button variant="secondary" onClick={toggle} aria-label="Toggle theme">
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            <span className="hidden sm:inline">Theme</span>
-          </button>
+            <span className="ml-2 hidden sm:inline">Theme</span>
+          </Button>
 
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <button className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-950/[0.04] px-3 py-2 text-sm font-medium text-gray-900/90 shadow-sm transition-colors hover:bg-gray-950/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 dark:border-gray-800 dark:bg-white/5 dark:text-gray-100/90 dark:hover:bg-white/10">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
                 <UserRound size={16} />
-                <span className="hidden sm:inline">Profile</span>
-              </button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content className="min-w-[200px] rounded-xl border border-gray-200 bg-white p-1 text-sm shadow-xl dark:border-gray-800 dark:bg-gray-900">
-                <DropdownMenu.Item className="rounded-lg px-3 py-2 outline-none hover:bg-accent">
-                  Account
-                </DropdownMenu.Item>
-                <DropdownMenu.Separator className="my-1 h-px bg-gray-200 dark:bg-gray-800" />
-                {isAuthed && (
-                  <DropdownMenu.Item
-                    onSelect={onLogout}
-                    className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-red-600 outline-none hover:bg-accent/60"
-                  >
-                    <LogOut size={14} /> Logout
-                  </DropdownMenu.Item>
-                )}
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
+                <span className="ml-2 hidden sm:inline">Profile</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Account</DropdownMenuItem>
+              {isAuthed && (
+                <DropdownMenuItem onSelect={onLogout} className="text-red-600">
+                  <LogOut size={14} className="mr-2" /> Logout
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>

@@ -1,124 +1,75 @@
-import React, { useState } from 'react';
-import {
-  Container,
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Paper,
-  Link,
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
-import { useAuth } from '../contexts/AuthContext';
+import type { FormEvent } from 'react';
+import { useState } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { toast } from 'sonner';
+import api from '../lib/api';
+import { setToken } from '../lib/storage';
 
-interface LoginFormData {
-  email: string;
-  password: string;
-}
-
-const Login: React.FC = () => {
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
-    password: '',
-  });
+export function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const location = useLocation() as any;
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const loginMutation = useMutation({
-    mutationFn: async (data: LoginFormData) => {
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, data);
-      return response.data;
-    },
-    onSuccess: (data) => {
-      toast.success('Login successful!');
-      login(data.token, data.user);
-      navigate('/');
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Login failed');
-    },
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    loginMutation.mutate(formData);
-  };
+    setLoading(true);
+    try {
+      const res = await api.post('/api/auth/login', { email, password });
+      setToken(res.data.token);
+      toast.success('Logged in successfully');
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    } catch (err: any) {
+      const msg = err?.response?.data?.error || 'Login failed';
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
-          <Typography component="h1" variant="h4" align="center" gutterBottom>
-            Bring Me Job
-          </Typography>
-          <Typography component="h2" variant="h5" align="center" gutterBottom>
-            Sign In
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-lg backdrop-blur">
+        <h1 className="mb-1 text-center text-3xl font-semibold tracking-tight">Sign in</h1>
+        <p className="mb-8 text-center text-sm text-muted-foreground">Welcome back. Enter your credentials.</p>
+        <form onSubmit={onSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <label htmlFor="email" className="block text-sm font-medium text-muted-foreground">Email</label>
+            <input
               id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={formData.email}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="normal"
+              type="email"
+              className="block w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none ring-0 placeholder:text-muted-foreground/70 focus:border-transparent focus:ring-2 focus:ring-primary/40"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={formData.password}
-              onChange={handleChange}
             />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled={loginMutation.isPending}
-            >
-              {loginMutation.isPending ? 'Signing In...' : 'Sign In'}
-            </Button>
-            <Box textAlign="center">
-              <Link
-                component="button"
-                variant="body2"
-                onClick={() => navigate('/register')}
-              >
-                Don't have an account? Sign Up
-              </Link>
-            </Box>
-          </Box>
-        </Paper>
-      </Box>
-    </Container>
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="password" className="block text-sm font-medium text-muted-foreground">Password</label>
+            <input
+              id="password"
+              type="password"
+              className="block w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none ring-0 placeholder:text-muted-foreground/70 focus:border-transparent focus:ring-2 focus:ring-primary/40"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-60"
+          >
+            {loading ? 'Signing in…' : 'Sign in'}
+          </button>
+        </form>
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          Don't have an account?{' '}
+          <Link to="/register" className="underline">Create one</Link>
+        </p>
+      </div>
+    </div>
   );
-};
-
-export default Login;
+}

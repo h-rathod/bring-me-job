@@ -9,12 +9,14 @@
 - [x] Implemented /api/auth/login endpoint with JWT.
 - [x] Created .env.example with necessary variables.
 
-## Step 2: Frontend with Minimal UI Kit
 
-- [x] Initialized React/Vite/TypeScript project.
-- [x] Installed and configured Material-UI (MUI) with a theme switcher.
-- [x] Built a main layout with a clean AppBar containing required navigation.
-- [x] Created Login/Registration pages using MUI components.
-- [x] Implemented API calls with toast notifications for user feedback.
-- [x] Implemented JWT storage and protected routing.
+## Step 2: Frontend with Modern Aesthetics
+
+- [ ] Initialized React/Vite/TypeScript project with Tailwind CSS.
+- [ ] Set up a minimal main layout with a functional theme switcher.
+- [ ] Header includes Profile, Logout, and Theme Switcher actions.
+- [ ] Created modern, minimal Login/Registration pages.
+- [ ] Implemented API calls with toast notifications for user feedback.
+- [ ] Implemented JWT storage and protected routing.
+
 

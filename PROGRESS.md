@@ -12,11 +12,25 @@
 
 ## Step 2: Frontend with Modern Aesthetics
 
-- [ ] Initialized React/Vite/TypeScript project with Tailwind CSS.
-- [ ] Set up a minimal main layout with a functional theme switcher.
-- [ ] Header includes Profile, Logout, and Theme Switcher actions.
-- [ ] Created modern, minimal Login/Registration pages.
-- [ ] Implemented API calls with toast notifications for user feedback.
+- [x] Initialized React/Vite/TypeScript project with Tailwind CSS.
+- [x] Set up a minimal main layout with a functional theme switcher.
+- [x] Header includes Profile, Logout, and Theme Switcher actions.
+- [x] Created modern, minimal Login/Registration pages.
+- [x] Implemented API calls with toast notifications for user feedback.
 - [ ] Implemented JWT storage and protected routing.
 
+### UI System
 
+- [x] Integrated shadcn/ui (Vite) and refactored common components (`Button`, `Input`, `Label`, `Card`, `DropdownMenu`).
+
+## Step 3: AI Parsing & Profile Management
+
+- [x] Created backend endpoints for resume upload and profile fetching.
+
+- [x] Integrated Gemini API for resume parsing.
+
+- [x] Designed an intuitive UI for the "Add Resume" flow.
+
+- [x] Implemented a "Profile" modal to display user info and skills.
+
+- [x] Handled loading states during resume processing for a smooth UX.

@@ -11,10 +11,13 @@ import {
 import { useTheme } from '../theme/ThemeProvider';
 import { useNavigate } from 'react-router-dom';
 import { clearToken, getToken } from '../../lib/storage';
+import { useState } from 'react';
+import { ProfileDialog } from '@/components/profile/ProfileDialog';
 
 export function Header() {
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
+  const [openProfile, setOpenProfile] = useState(false);
 
   const isAuthed = Boolean(getToken());
 
@@ -45,7 +48,7 @@ export function Header() {
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Account</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setOpenProfile(true)}>View Profile</DropdownMenuItem>
               {isAuthed && (
                 <DropdownMenuItem onSelect={onLogout} className="text-red-600">
                   <LogOut size={14} className="mr-2" /> Logout
@@ -55,6 +58,7 @@ export function Header() {
           </DropdownMenu>
         </div>
       </div>
+      <ProfileDialog open={openProfile} onOpenChange={setOpenProfile} />
     </header>
   );
 }

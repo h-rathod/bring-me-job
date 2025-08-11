@@ -11,17 +11,26 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio"
   },
-  "keywords": ["job-search", "resume", "express", "typescript", "prisma"],
+  "keywords": [
+    "job-search",
+    "resume",
+    "express",
+    "typescript",
+    "prisma"
+  ],
   "author": "",
   "license": "MIT",
   "description": "Backend API for Bring Me Job - a job search and resume management platform",
   "dependencies": {
-    "express": "^4.21.2",
+    "@google/generative-ai": "^0.24.1",
+    "@prisma/client": "^6.13.0",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "@prisma/client": "^6.13.0"
+    "multer": "^2.0.2",
+    "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
     "@prisma/client": "^6.13.0",
@@ -29,7 +38,9 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
     "@types/node": "^24.1.0",
+    "@types/pdf-parse": "^1.1.5",
     "nodemon": "^3.1.10",
     "prisma": "^6.13.0",
     "ts-node": "^10.9.2",

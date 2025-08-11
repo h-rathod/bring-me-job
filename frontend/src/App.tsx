@@ -3,6 +3,7 @@ import { Layout } from './components/layout/Layout';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { ProtectedRoute } from './routes/ProtectedRoute';
+import { Home } from './pages/Home';
 
 function App() {
   return (
@@ -14,9 +15,7 @@ function App() {
         element={
           <ProtectedRoute>
             <Layout>
-              <div className="mx-auto max-w-4xl p-6 text-center text-sm text-muted-foreground">
-                Welcome to Bring Me Job
-              </div>
+              <Home />
             </Layout>
           </ProtectedRoute>
         }

@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
+import profileRoutes from './routes/profile';
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/profile', profileRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -36,4 +38,5 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/health`);
   console.log(`Auth endpoints: http://localhost:${PORT}/api/auth/register and http://localhost:${PORT}/api/auth/login`);
+  console.log(`Profile endpoints: http://localhost:${PORT}/api/profile/me and POST /api/profile/upload-resume`);
 });

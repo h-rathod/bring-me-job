@@ -5,6 +5,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button'
 import api from '@/lib/api'
 import { toast } from 'sonner'
+import { JobCard, type JobItem } from '@/components/jobs/JobCard'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface ProfileMe {
   fullName: string
@@ -17,6 +20,9 @@ export function Home() {
   const [openUpload, setOpenUpload] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [triggered, setTriggered] = useState(false)
+  const [sort, setSort] = useState<'match' | 'recent'>('match')
+  const [locationFilter, setLocationFilter] = useState('')
 
   const { data, isLoading } = useQuery<ProfileMe | null>({
     queryKey: ['profile', 'me'],
@@ -33,6 +39,35 @@ export function Home() {
   })
 
   const hasProfile = useMemo(() => !!data, [data])
+
+  // Fetch job matches only after user presses "Bring Me Job!"
+  const matches = useQuery<{ jobs: JobItem[] }>({
+    queryKey: ['jobs', 'matches'],
+    enabled: hasProfile && triggered,
+    queryFn: async () => {
+      const res = await api.get('/api/jobs/matches')
+      return res.data as { jobs: JobItem[] }
+    },
+    staleTime: 60_000,
+  })
+
+  const filteredSortedJobs = useMemo(() => {
+    const jobs = matches.data?.jobs ?? []
+    const byLocation = locationFilter.trim().toLowerCase()
+    let list = jobs
+    if (byLocation) {
+      list = list.filter(j => (j.location || '').toLowerCase().includes(byLocation))
+    }
+    if (sort === 'recent') {
+      return [...list].sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+    }
+    // default: sort by match desc, nulls last
+    return [...list].sort((a, b) => {
+      const as = typeof a.similarity === 'number' ? a.similarity : -1
+      const bs = typeof b.similarity === 'number' ? b.similarity : -1
+      return bs - as
+    })
+  }, [matches.data, sort, locationFilter])
 
   const onUpload = async () => {
     if (!file) {
@@ -66,14 +101,70 @@ export function Home() {
           <span className="ml-2">Checking your profile...</span>
         </div>
       ) : hasProfile ? (
-        <div className="rounded-lg border border-gray-200 p-6 dark:border-gray-800">
-          <div className="text-base font-semibold">Welcome back{data?.fullName ? `, ${data.fullName}` : ''}!</div>
-          <div className="mt-1 text-sm text-muted-foreground">Profile detected. More dashboard content coming next.</div>
-          <div className="mt-4">
-            <Button onClick={() => setOpenUpload(true)} variant="outline">
-              Update Resume
-            </Button>
+        <div className="space-y-6">
+          <div className="rounded-lg border border-gray-200 p-6 dark:border-gray-800">
+            <div className="text-base font-semibold">Welcome back{data?.fullName ? `, ${data.fullName}` : ''}!</div>
+            <div className="mt-1 text-sm text-muted-foreground">Here are jobs that match your skills.</div>
+            <div className="mt-4">
+              <Button onClick={() => setOpenUpload(true)} variant="outline">
+                Update Resume
+              </Button>
+            </div>
+            <div className="mt-4 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <Button
+                onClick={async () => {
+                  setTriggered(true)
+                  await qc.invalidateQueries({ queryKey: ['jobs', 'matches'] })
+                }}
+              >
+                Bring Me Job!
+              </Button>
+              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-muted-foreground">Sort</label>
+                  <Select value={sort} onValueChange={(v: 'match' | 'recent') => setSort(v)}>
+                    <SelectTrigger className="h-9 w-40">
+                      <SelectValue placeholder="Sort" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="match">Most match</SelectItem>
+                      <SelectItem value="recent">Most recent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-muted-foreground">Location</label>
+                  <input
+                    className="h-9 rounded-md border border-gray-200 bg-transparent px-2 text-sm dark:border-gray-800"
+                    placeholder="e.g. Remote, India"
+                    value={locationFilter}
+                    onChange={(e) => setLocationFilter(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
+
+          {/* Job Matches */}
+          {triggered && matches.isLoading ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="rounded-lg border p-4">
+                  <Skeleton className="h-5 w-2/3" />
+                  <Skeleton className="mt-2 h-4 w-1/2" />
+                  <Skeleton className="mt-4 h-16 w-full" />
+                </div>
+              ))}
+            </div>
+          ) : triggered && filteredSortedJobs.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {filteredSortedJobs.map((job) => (
+                <JobCard key={job.id} job={job} />
+              ))}
+            </div>
+          ) : triggered ? (
+            <div className="text-sm text-muted-foreground">No matches yet. Try updating your resume.</div>
+          ) : null}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 py-24 text-center dark:border-gray-700">

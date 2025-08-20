@@ -3,9 +3,8 @@ import multer from 'multer';
 import pdfParse from 'pdf-parse';
 import { requireAuth, AuthedRequest } from '../middleware/auth';
 import { parseResumeToProfile } from '../services/geminiService';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 
-const prisma = new PrismaClient();
 const router = Router();
 
 const upload = multer({

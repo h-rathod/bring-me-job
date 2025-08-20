@@ -89,7 +89,8 @@ model Job {
   location     String?
   url          String?
   requirements Json?    // Store job requirements as JSON
-  vector       Json?    // For vector embeddings (using JSON array instead of pgvector for Supabase compatibility)
+  vector       Json?    // Legacy JSON storage of embeddings (fallback)
+  embedding    Unsupported("vector")? // pgvector column for semantic search
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

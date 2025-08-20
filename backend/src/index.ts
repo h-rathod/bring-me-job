@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
 import profileRoutes from './routes/profile';
+import jobsRoutes from './routes/jobs';
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/jobs', jobsRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -39,4 +41,5 @@ app.listen(PORT, () => {
   console.log(`Health check: http://localhost:${PORT}/health`);
   console.log(`Auth endpoints: http://localhost:${PORT}/api/auth/register and http://localhost:${PORT}/api/auth/login`);
   console.log(`Profile endpoints: http://localhost:${PORT}/api/profile/me and POST /api/profile/upload-resume`);
+  console.log(`Jobs endpoint: GET http://localhost:${PORT}/api/jobs/matches (protected)`);
 });

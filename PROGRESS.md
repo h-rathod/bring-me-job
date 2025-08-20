@@ -34,3 +34,19 @@
 - [x] Implemented a "Profile" modal to display user info and skills.
 
 - [x] Handled loading states during resume processing for a smooth UX.
+
+## Step 4: Job Matching Engine
+
+- [x] Created backend script to aggregate jobs and create vector embeddings.
+- [x] Implemented protected `/api/jobs/matches` endpoint for semantic search.
+- [x] Built frontend UI using shadcn/ui `Card` components to display a list of matched jobs.
+- [x] Implemented `Skeleton` components for a polished loading experience.
+
+## Step 5: Skill Gap Analysis & Interactive UI
+
+- [x] Created backend endpoint for skill gap analysis with a percentage score.
+- [x] Integrated YouTube API for learning recommendations.
+- [x] Enhanced the JobCard UI to display the percentage match score using a Badge.
+- [x] Implemented a Dialog or Drawer to show the detailed skill gap analysis.
+- [x] Used Badge components to visually differentiate matching vs. missing skills.
+- [x] Displayed learning resources and an "Apply" button within the details view.

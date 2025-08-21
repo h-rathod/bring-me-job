@@ -50,3 +50,10 @@
 - [x] Implemented a Dialog or Drawer to show the detailed skill gap analysis.
 - [x] Used Badge components to visually differentiate matching vs. missing skills.
 - [x] Displayed learning resources and an "Apply" button within the details view.
+
+## Docker Integration
+
+- [x] Created `backend/Dockerfile` for Node/Express with Prisma generate and dev server.
+- [x] Created `frontend/Dockerfile` for Vite React with external accessibility.
+- [x] Added root `docker-compose.yml` with services: `db` (pgvector), `backend`, `frontend`.
+- [x] Added root `.dockerignore` to optimize Docker build context.

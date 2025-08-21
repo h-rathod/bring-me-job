@@ -1,0 +1,30 @@
+# Global Docker ignore for Bring Me Job
+# Node
+node_modules
+**/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+
+# Git
+.git
+.gitignore
+
+# Env and local config
+.env
+**/.env
+.env.*
+**/.env.*
+.DS_Store
+
+# Build outputs
+backend/dist
+frontend/dist
+**/.next
+**/build
+**/.vite
+
+# IDE
+.vscode
+.idea

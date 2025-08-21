@@ -1,0 +1,53 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: bringmejob-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: bringmejob
+    ports:
+      - "5433:5432" # host:container
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./backend/prisma/initdb:/docker-entrypoint-initdb.d:ro
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bringmejob-backend
+    depends_on:
+      - db
+    env_file:
+      - ./backend/.env
+    environment:
+      # Ensure Prisma uses the Docker DB (can be overridden by .env)
+      DATABASE_URL: "postgresql://docker:docker@db:5432/bringmejob"
+      NODE_ENV: development
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - "3001:3001"
+    command: ["npm", "run", "dev"]
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bringmejob-frontend
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:3001
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+volumes:
+  db_data:

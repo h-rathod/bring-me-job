@@ -63,15 +63,20 @@ This is a monorepo containing both frontend and backend applications:
 Copy `backend/.env.example` to `backend/.env` and set:
 
 ```bash
-DATABASE_URL=postgresql://...           # Supabase/Postgres connection
+DATABASE_URL=postgresql://...           # Supabase/Postgres connection (local/dev)
 JWT_SECRET=your_jwt_secret
 GEMINI_API_KEY=your_google_generative_ai_key
 GEMINI_EMBEDDING_MODEL=text-embedding-004
-AGGREGATOR_LIMIT=50                      # optional, cap ingested jobs
 YOUTUBE_API_KEY=your_youtube_api_key     # optional; caching & fallbacks included
 ```
 
 Ensure pgvector is enabled on your database.
+
+Docker users: set
+
+```bash
+DATABASE_URL="postgresql://docker:docker@db:5432/bringmejob"
+```
 
 ### Frontend `.env`
 Copy `frontend/.env.example` to `frontend/.env` and set API base if needed, e.g.:
@@ -101,6 +106,38 @@ npm install
 npm run dev
 ```
 App: `http://localhost:5173` (default Vite port)
+
+## Run with Docker (recommended for consistency)
+
+Prerequisites:
+- Docker Desktop installed and running
+
+Steps:
+- Copy env files if not present:
+  - `backend/.env` (see Docker `DATABASE_URL` above)
+  - `frontend/.env` (optional; compose sets `VITE_API_URL` by default)
+- Build and start all services:
+
+```bash
+docker compose up --build
+```
+
+First-time DB setup (if schema not applied):
+
+```bash
+docker compose exec backend npx prisma migrate deploy
+# or, if you have no migrations yet:
+docker compose exec backend npx prisma db push
+```
+
+URLs:
+- Frontend: http://localhost:5173
+- Backend health: http://localhost:3001/health
+- Postgres: localhost:5433 (user: docker, password: docker, db: bringmejob)
+
+Manage:
+- Stop: `docker compose down` (keeps DB volume)
+- Stop and remove volumes (delete DB data): `docker compose down -v`
 
 ## Data & Matching
 
